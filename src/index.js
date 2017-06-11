@@ -6,3 +6,6 @@ export {
   softUpdate,
   mergeIntoState
 } from "./helpers";
+export {
+  withStateMiddleware
+} from "./middleware";

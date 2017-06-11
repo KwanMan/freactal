@@ -53,6 +53,8 @@ Readability counts.
   - [`hardUpdate`](#hardupdate)
   - [`softUpdate`](#softupdate)
   - ['mergeIntoState'](#mergeintostate)
+- [Included middleware](#included-middleware)
+  - [`withStateMiddleware`](#withstatemiddleware)
 - [Server-side Rendering](#server-side-rendering)
   - [with `React#renderToString`](#with-reactrendertostring)
   - [with Rapscallion](#with-rapscallion)
@@ -1055,6 +1057,38 @@ Here's what it might look like in practice:
 export const getData = (effects, dataId) => fetch(`http://some.url/${dataId}`)
   .then(response => response.json())
   .then(body => mergeIntoState({ data: body.data }));
+```
+
+## Included Middleware
+
+### `withStateMiddleware`
+
+`withStateMiddleware` passes the current state to your effects so you can perform actions based on the state
+
+Here's an example:
+
+```javascript
+import { provideState, withStateMiddleware, mergeIntoState } from "freactal";
+
+const wrapComponentWithState = provideState({
+  initialState: () => ({
+    offset: 0,
+    limit: 10,
+    results: []
+  }),
+  middleware: [withStateMiddleware],
+  effects: {
+    fetchNextPage: async (effects, state) => {
+      const { offset, limit } = state;
+      const newOffset = offset + limit;
+      const { data } = await axios.post(`/api/results?offset=${newOffset}&limit=${limit}`);
+      return mergeIntoState({
+        offset: newOffset,
+        results: data
+      });
+    }
+  }
+});
 ```
 
 
